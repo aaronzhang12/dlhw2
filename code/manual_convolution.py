@@ -45,4 +45,6 @@ class ManualConv2d(tf.keras.layers.Layer):
         num_examples, in_height, in_width, input_in_channels = inputs.shape
         filter_height, filter_width, filter_in_channels, filter_out_channels = self.filters.shape
 
+        
+
         # fill out the rest!

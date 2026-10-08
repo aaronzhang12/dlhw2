@@ -164,30 +164,49 @@ def main():
 
     classes = [3,4,5] # classes for cat, deer, & dog
 
-    # TODO: assignment.main() pt 1
     # Load your testing and training data using the get_data function
-    train_data, train_labels = get_data(LOCAL_TRAIN_FILE, classes)
-    test_data, test_labels = get_data(LOCAL_TEST_FILE, classes)
+    train_data, train_labels = get_data(AUTOGRADER_TRAIN_FILE, classes)
+    test_data, test_labels = get_data(AUTOGRADER_TEST_FILE, classes)
 
-    # TODO: assignment.main() pt 2
+    # initialize model and optimizer
     mlp = MLP(classes)
-    optimizer = tf.keras.optimizers.Adam(learning_rate = 0.001)
+    optimizer = tf.keras.optimizers.legacy.Adam(learning_rate = 0.0003)
 
-    # TODO: assignment.main() pt 3
-    train(mlp, optimizer, train_data, train_labels)
+    # for epoch in range(30):
+    #     train(mlp, optimizer, train_data, train_labels)
 
+    #     # get the current training and test accuracy at each epoch to test overfitting
+    #     train_acc, train_logits = test(mlp, train_data, train_labels)
+    #     test_acc, _ = test(mlp, test_data, test_labels)
+    #     train_loss = mlp.loss(train_logits, train_labels)
 
-    # TODO: assignment.main() pt 4
-    accuracy, predictions = test(mlp, test_data, test_labels)
+    #     print(
+    #         f"Epoch {epoch + 1}: loss={float(train_loss):.3f}, "
+    #         f"train={float(train_acc):.1%}, test={float(test_acc):.1%}"
+    #     )
+
+    # accuracy, predictions = test(mlp, test_data, test_labels)
+    # print(accuracy)
+    cnn = CNN(classes)
+
+    for epoch in range(10):
+        train(cnn, optimizer, train_data, train_labels)
+
+        # get the current training and test accuracy at each epoch to test overfitting
+        train_acc, train_logits = test(cnn, train_data, train_labels)
+        test_acc, _ = test(cnn, test_data, test_labels)
+        train_loss = cnn.loss(train_logits, train_labels)
+
+        print(
+            f"Epoch {epoch + 1}: loss={float(train_loss):.3f}, "
+            f"train={float(train_acc):.1%}, test={float(test_acc):.1%}"
+        )
+
+    accuracy, predictions = test(cnn, test_data, test_labels)
     print(accuracy)
 
-    # TODO: assignment.main() pt 5
-    # Save your predictions as either "predictions_cnn.npy" or "predictions_mlp.npy"
-    #   depending on which model you are using
-    # You will submit these prediction files to the autograder with predictions
-    #    For the CAT, DEER, and DOG classes
+    np.save("predictions_cnn.npy", predictions.numpy())
     return
-
 
 if __name__ == '__main__':
     main()

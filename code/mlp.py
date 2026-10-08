@@ -39,6 +39,10 @@ class MLP(CifarModel):
             units = self.hidden_layer_size,
             activation = "relu"
         )
+        self.hidden_2 = tf.keras.layers.Dense(
+            units = self.hidden_layer_size,
+            activation = "relu"
+        )
 
     def call(self, inputs, is_testing=False):
         """
@@ -53,5 +57,7 @@ class MLP(CifarModel):
             self.input_width * self.input_height * self.image_channels
         )
         x = tf.reshape(inputs, [-1, num_features])
+        # try 2 hidden layers
         x = self.hidden(x)
+        x = self.hidden_2(x)
         return self.dense_1(x)
