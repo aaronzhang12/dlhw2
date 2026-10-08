@@ -26,13 +26,19 @@ class MLP(CifarModel):
         # Initialize all hyperparameters
         self.loss_list = []
         self.batch_size = 64
-        self.input_width = ???
-        self.input_height = ???
-        self.image_channels = ???
+        # make sure to change these
+        self.input_width = 32
+        self.input_height = 32
+        self.image_channels = 3
         self.num_classes = len(classes)
         self.hidden_layer_size = 128
         
-        # TODO mlp.MLP.__init__(): Initialize your Layers here.
+        # output of 3 classes
+        self.dense_1 = tf.keras.layers.Dense(units = self.num_classes)
+        self.hidden = tf.keras.layers.Dense(
+            units = self.hidden_layer_size,
+            activation = "relu"
+        )
 
     def call(self, inputs, is_testing=False):
         """
@@ -41,5 +47,10 @@ class MLP(CifarModel):
         :param is_testing: a boolean that should be set to True only when you're doing Part 2 of the assignment and this function is being called during testing
         :return: logits - a matrix of shape (num_inputs, num_classes); during training, it would be (batch_size, num_classes)
         """
-        # TODO mlp.MLP.call(): Implement your forward pass here.
-        raise NotImplementedError("Implement me!")
+        # 
+        num_features = (
+            self.input_width * self.input_height * self.image_channels
+        )
+        x = tf.reshape(inputs, [-1, num_features])
+        x = self.hidden(x)
+        return self.dense_1(x)

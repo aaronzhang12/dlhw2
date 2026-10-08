@@ -27,9 +27,10 @@ class CNN(CifarModel):
         # Initialize all hyperparameters
         self.loss_list = []
         self.batch_size = 64
-        self.input_width = ???
-        self.input_height = ???
-        self.image_channels = ???
+        # make sure to change these
+        self.input_width = 0
+        self.input_height = 0
+        self.image_channels = 0
         self.num_classes = len(classes)
 
         self.hidden_layer_size = 320

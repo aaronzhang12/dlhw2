@@ -133,16 +133,26 @@ def main():
     AUTOGRADER_TRAIN_FILE = '../data/train'
     AUTOGRADER_TEST_FILE = '../data/test'
 
-    LOCAL_TRAIN_FILE = ...
-    LOCAL_TEST_FILE = ...
+    LOCAL_TRAIN_FILE = "/Users/aaronzhang/Desktop/cs2470/HW2-CNN-F26-Stencil/data/train"
+    LOCAL_TEST_FILE = "/Users/aaronzhang/Desktop/cs2470/HW2-CNN-F26-Stencil/data/test"
 
     classes = [3,4,5] # classes for cat, deer, & dog
 
     # TODO: assignment.main() pt 1
     # Load your testing and training data using the get_data function
+    data, labels = get_data(LOCAL_TRAIN_FILE, classes)
+    print(data.shape)
+    print(labels.shape)
 
     # TODO: assignment.main() pt 2
-    # Initialize your model and optimizer
+    mlp = MLP(classes)
+    optimizer = tf.keras.optimizers.Adam(learning_rate = 0.001)
+    batch = data[0:mlp.batch_size]
+    logits = mlp(batch)
+    print("Batch shape:", batch.shape)
+    print("Logits shape:", logits.shape)
+
+    assert logits.shape == (batch.shape[0], mlp.num_classes)
 
     # TODO: assignment.main() pt 3
     # Train your model

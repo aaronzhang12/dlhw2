@@ -50,4 +50,14 @@ def get_data(file_path, classes) -> tuple[np.ndarray, tf.Tensor]:
     inputs: np.ndarray = np.array(unpickled_file[b'data'])
     labels: np.ndarray = np.array(unpickled_file[b'labels'])
 
-    # TODO: Extract only the data that matches the corresponding classes we want
+    keep_indices = np.isin(labels, classes)
+    # normalize kept inputs and shape to the mlp call dimensions
+    keep_inputs = np.float32(inputs[keep_indices]/255)
+    keep_inputs = keep_inputs.reshape(-1, 3, 32, 32)
+    keep_inputs = keep_inputs.transpose(0,2,3,1)
+
+    # create one-hot tensor of labels
+    keep_labels = labels[keep_indices]
+    bool_matrix = tf.expand_dims(keep_labels, axis=-1) == classes
+    one_hot = tf.cast(bool_matrix, tf.float32)
+    return (keep_inputs, one_hot)
