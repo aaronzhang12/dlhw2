@@ -47,7 +47,8 @@ class MLP(CifarModel):
         :param is_testing: a boolean that should be set to True only when you're doing Part 2 of the assignment and this function is being called during testing
         :return: logits - a matrix of shape (num_inputs, num_classes); during training, it would be (batch_size, num_classes)
         """
-        # 
+        if not is_testing:
+            inputs = tf.image.random_flip_left_right(inputs)
         num_features = (
             self.input_width * self.input_height * self.image_channels
         )

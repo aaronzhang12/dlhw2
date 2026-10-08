@@ -28,8 +28,24 @@ def train(model, optimizer, train_inputs, train_labels):
     shape (num_labels, num_classes)
     :return: None
     '''
-    #TODO: Implement the training loop
-    raise NotImplementedError
+    num_inputs = train_inputs.shape[0]
+    
+    shuffled_indices = tf.random.shuffle(tf.range(num_inputs))
+    shuffled_inputs = tf.gather(train_inputs, shuffled_indices)
+    shuffled_labels = tf.gather(train_labels, shuffled_indices)
+
+    for i in range(math.ceil(num_inputs/model.batch_size)):
+        # start training epochs over all sequential batches
+        batch_inputs, batch_labels = get_next_batch(i, shuffled_inputs, shuffled_labels, model.batch_size)
+
+        with tf.GradientTape() as tape:
+            # Computes the gradients of all trainable vars w.r.t loss
+            logits = model(batch_inputs)
+            loss = model.loss(logits, batch_labels)
+            
+        gradients = tape.gradient(loss, model.trainable_variables)
+        # Adjusts the trainable vars according to the optimizer update rule
+        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
 
 def test(model, test_inputs, test_labels):
@@ -41,12 +57,22 @@ def test(model, test_inputs, test_labels):
     :param test_labels: test labels (all corresponding labels),
     shape (num_labels, num_classes)
     :return: 
-        test accuracy - this should be the average accuracy across
-    all batches
-        test preds - all of the model's predictions for each of the test inputs
+        test accuracy - the fraction of correctly classified test inputs
+        test logits - shape (num_inputs, num_classes), in input order
     """
-    # TODO: Implement the testing loop
-    raise NotImplementedError
+    num_inputs = test_inputs.shape[0]
+    batch_logits = []
+
+    for i in range(math.ceil(num_inputs / model.batch_size)):
+        batch_inputs, _ = get_next_batch(
+            i, test_inputs, test_labels, model.batch_size
+        )
+        batch_logits.append(model(batch_inputs, is_testing=True))
+
+    logits = tf.concat(batch_logits, axis=0)
+    accuracy = model.accuracy(logits, test_labels)
+    return (accuracy, logits)
+
 
 def visualize_loss(losses):
     """
@@ -140,25 +166,20 @@ def main():
 
     # TODO: assignment.main() pt 1
     # Load your testing and training data using the get_data function
-    data, labels = get_data(LOCAL_TRAIN_FILE, classes)
-    print(data.shape)
-    print(labels.shape)
+    train_data, train_labels = get_data(LOCAL_TRAIN_FILE, classes)
+    test_data, test_labels = get_data(LOCAL_TEST_FILE, classes)
 
     # TODO: assignment.main() pt 2
     mlp = MLP(classes)
     optimizer = tf.keras.optimizers.Adam(learning_rate = 0.001)
-    batch = data[0:mlp.batch_size]
-    logits = mlp(batch)
-    print("Batch shape:", batch.shape)
-    print("Logits shape:", logits.shape)
-
-    assert logits.shape == (batch.shape[0], mlp.num_classes)
 
     # TODO: assignment.main() pt 3
-    # Train your model
+    train(mlp, optimizer, train_data, train_labels)
+
 
     # TODO: assignment.main() pt 4
-    # Test your model
+    accuracy, predictions = test(mlp, test_data, test_labels)
+    print(accuracy)
 
     # TODO: assignment.main() pt 5
     # Save your predictions as either "predictions_cnn.npy" or "predictions_mlp.npy"
