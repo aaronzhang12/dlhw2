@@ -89,7 +89,12 @@ class CNN(CifarModel):
         x = self.batch_norm_2(x, training=not is_testing)
         x = tf.nn.relu(x)
         x = tf.nn.max_pool(x, ksize=self.pool_size, strides=self.pool_size, padding="SAME")
-        x = self.conv_3(x)
+        # keep 3rd base convolution layer if training
+        if not is_testing:
+            x = self.conv_3(x)
+        # otherwise use manual convolution layer
+        else:
+            x = ManualConv2d(x)
         x = self.batch_norm_3(x, training=not is_testing)
         x = tf.nn.relu(x)
         x = tf.reshape(x, [-1, x.shape[1]*x.shape[2]*x.shape[3]])
