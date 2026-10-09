@@ -46,18 +46,24 @@ class CNN(CifarModel):
             activation=None,
         )
         self.conv_2 = tf.keras.layers.Conv2D(
-            filters = 32, 
+            filters = 64, 
             kernel_size = (3,3), 
             strides=(1, 1), 
             padding="same", 
             activation=None, 
         )
         self.conv_3 = tf.keras.layers.Conv2D(
-            filters = 32, 
+            filters = 64, 
             kernel_size = (3,3), 
             strides=(1, 1), 
             padding="same", 
             activation=None, 
+        )
+        # manual layer for testing
+        self.manual_conv_3 = ManualConv2d(
+            filter_shape = [3,3,64,64],
+            padding = "SAME",
+            trainable = False
         )
         self.batch_norm_1 = tf.keras.layers.BatchNormalization(epsilon=self.epsilon)
         self.batch_norm_2 = tf.keras.layers.BatchNormalization(epsilon=self.epsilon)
@@ -94,7 +100,10 @@ class CNN(CifarModel):
             x = self.conv_3(x)
         # otherwise use manual convolution layer
         else:
-            x = ManualConv2d(x)
+            self.manual_conv_3.set_weights(
+                self.conv_3.kernel, self.conv_3.bias
+            )
+            x = self.manual_conv_3(x)
         x = self.batch_norm_3(x, training=not is_testing)
         x = tf.nn.relu(x)
         x = tf.reshape(x, [-1, x.shape[1]*x.shape[2]*x.shape[3]])

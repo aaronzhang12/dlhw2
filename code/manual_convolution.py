@@ -58,6 +58,7 @@ class ManualConv2d(tf.keras.layers.Layer):
             pad_h_2 = filter_height - pad_h_1-1
             pad_w_2= filter_width-pad_w_1-1
 
+        # calculate output image dimensions
         out_height = in_height + pad_h_1 + pad_h_2 -filter_height + 1
         out_width = in_width + pad_w_1 + pad_w_2 -filter_width + 1
 
@@ -70,7 +71,7 @@ class ManualConv2d(tf.keras.layers.Layer):
         )
 
         rows = []
-        # iterate through the image dimensions
+        # iterate through the output image dimensions
         for i in range(out_height):
             columns = []
             for j in range(out_width):
@@ -83,6 +84,7 @@ class ManualConv2d(tf.keras.layers.Layer):
                 if self.use_bias:
                     values = values + self.bias
                 columns.append(values)
+            # stack the values at each pixel together
             row = tf.stack(columns, axis = 1)
             rows.append(row)
         conv_images = tf.stack(rows, axis = 1)

@@ -163,6 +163,7 @@ def main():
     LOCAL_TEST_FILE = "/Users/aaronzhang/Desktop/cs2470/HW2-CNN-F26-Stencil/data/test"
 
     classes = [3,4,5] # classes for cat, deer, & dog
+    class_ids = np.asarray(sorted(classes), dtype=np.int64)
 
     # Load your testing and training data using the get_data function
     train_data, train_labels = get_data(AUTOGRADER_TRAIN_FILE, classes)
@@ -172,41 +173,43 @@ def main():
     mlp = MLP(classes)
     optimizer = tf.keras.optimizers.legacy.Adam(learning_rate = 0.0003)
 
-    # for epoch in range(30):
-    #     train(mlp, optimizer, train_data, train_labels)
-
-    #     # get the current training and test accuracy at each epoch to test overfitting
-    #     train_acc, train_logits = test(mlp, train_data, train_labels)
-    #     test_acc, _ = test(mlp, test_data, test_labels)
-    #     train_loss = mlp.loss(train_logits, train_labels)
-
-    #     print(
-    #         f"Epoch {epoch + 1}: loss={float(train_loss):.3f}, "
-    #         f"train={float(train_acc):.1%}, test={float(test_acc):.1%}"
-    #     )
-
-    # accuracy, predictions = test(mlp, test_data, test_labels)
-    # print(accuracy)
-    cnn = CNN(classes)
-
-    for epoch in range(10):
-        train(cnn, optimizer, train_data, train_labels)
+    for epoch in range(20):
+        train(mlp, optimizer, train_data, train_labels)
 
         # get the current training and test accuracy at each epoch to test overfitting
-        train_acc, train_logits = test(cnn, train_data, train_labels)
-        test_acc, _ = test(cnn, test_data, test_labels)
-        train_loss = cnn.loss(train_logits, train_labels)
+        train_acc, train_logits = test(mlp, train_data, train_labels)
+        test_acc, _ = test(mlp, test_data, test_labels)
+        train_loss = mlp.loss(train_logits, train_labels)
 
         print(
-            f"Epoch {epoch + 1}: loss={float(train_loss):.3f}, "
+            f"MLP Epoch {epoch + 1}: loss={float(train_loss):.3f}, "
             f"train={float(train_acc):.1%}, test={float(test_acc):.1%}"
         )
 
-    accuracy, predictions = test(cnn, test_data, test_labels)
+    accuracy, predictions = test(mlp, test_data, test_labels)
+    np.save("predictions_mlp.npy", class_ids[np.argmax(predictions.numpy(), axis=1)])
     print(accuracy)
+    # cnn = CNN(classes)
 
-    np.save("predictions_cnn.npy", predictions.numpy())
-    return
+    # for epoch in range(15):
+    #     train(cnn, optimizer, train_data, train_labels)
+
+    #     # get the current training and test accuracy at each epoch to test overfitting
+    #     train_acc, train_logits = test(cnn, train_data, train_labels)
+    #     test_acc, _ = test(cnn, test_data, test_labels)
+    #     train_loss = cnn.loss(train_logits, train_labels)
+
+    #     print(
+    #         f"CNN Epoch {epoch + 1}: loss={float(train_loss):.3f}, "
+    #         f"train={float(train_acc):.1%}, test={float(test_acc):.1%}"
+    #     )
+
+    # accuracy, predictions = test(cnn, test_data, test_labels)
+    # print(accuracy)
+
+    # predicted_class_ids = class_ids[np.argmax(predictions.numpy(), axis=1)]
+    # np.save("predictions_cnn.npy", predicted_class_ids)
+    # return
 
 if __name__ == '__main__':
     main()

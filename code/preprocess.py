@@ -50,6 +50,7 @@ def get_data(file_path, classes) -> tuple[np.ndarray, tf.Tensor]:
     inputs: np.ndarray = np.array(unpickled_file[b'data'])
     labels: np.ndarray = np.array(unpickled_file[b'labels'])
 
+    classes = np.sort(np.asarray(classes))
     keep_indices = np.isin(labels, classes)
     # normalize kept inputs and shape to the mlp call dimensions
     keep_inputs = np.float32(inputs[keep_indices]/255)
