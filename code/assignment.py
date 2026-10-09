@@ -162,7 +162,8 @@ def main():
     LOCAL_TRAIN_FILE = "/Users/aaronzhang/Desktop/cs2470/HW2-CNN-F26-Stencil/data/train"
     LOCAL_TEST_FILE = "/Users/aaronzhang/Desktop/cs2470/HW2-CNN-F26-Stencil/data/test"
 
-    classes = [3,4,5] # classes for cat, deer, & dog
+    # for mapping one-hot class back to original
+    classes = [3,4,5]
     class_ids = np.asarray(sorted(classes), dtype=np.int64)
 
     # Load your testing and training data using the get_data function
